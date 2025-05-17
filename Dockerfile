@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN mkdir -p /data /novnc /opt/qemu
 
 
-ADD https://releases.ubuntu.com/focal/ubuntu-20.04.6-live-server-amd64.iso /opt/qemu/ubuntu.iso
+ADD https://mirror.del2.albony.in/ubuntu-releases/22.04.5/ubuntu-22.04.5-live-server-amd64.iso
 
 
 RUN wget https://github.com/novnc/noVNC/archive/refs/heads/master.zip -O /tmp/novnc.zip && \
