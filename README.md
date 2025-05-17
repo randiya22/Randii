@@ -1,14 +1,39 @@
-<h1 align="center">Ubuntu 20.4 in Docker</h1>
+# Ubuntu 20.04 QEMU Virtual Machine in Docker Container
+
+![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
+![QEMU](https://img.shields.io/badge/QEMU-FF6600?style=for-the-badge&logo=qemu&logoColor=white)
+
+A lightweight Ubuntu 20.04 virtual machine running in a Docker container using QEMU/KVM for optimal performance.
+
+## Features
+
+- 🐳 Containerized Ubuntu 20.04 VM
+- ⚡ KVM-accelerated for near-native performance
+- 🌐 Web-based VNC access (port 6080)
+- 🔑 SSH access (port 2221)
+- 💾 Persistent storage volume
+
+## Prerequisites
+
+- Docker installed
+- KVM support on host machine
+- `sudo` privileges (for KVM device access)
 
 ## Installation
-1. Clone the repository or download:
-`git clone https://github.com/hopingboyz/ubuntuvm20.4`
 
-3. go to directory:
-`cd ubuntuvm20.04`
+```bash
+# Clone the repository
+git clone https://github.com/hopingboyz/ubuntuvm20.4
+cd ubuntuvm20.04
 
-3. Run this :
-`docker build -t qemu-ubuntu-vm .`
+# Build the Docker image
+docker build -t qemu-ubuntu-vm .
 
-5. Run Ubuntu 20.04:
-`docker run -it --rm --device /dev/kvm -p 6080:6080 -p 2221:2222 -v qemu-data:/data qemu-ubuntu-vm`
+# Run the container
+docker run -it --rm \
+  --device /dev/kvm \
+  -p 6080:6080 \
+  -p 2221:2222 \
+  -v qemu-data:/data \
+  qemu-ubuntu-vm
