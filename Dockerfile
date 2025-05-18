@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN mkdir -p /data /novnc /opt/qemu
 
 
-ADD https://mirror.del2.albony.in/ubuntu-releases/22.04.5/ubuntu-22.04.5-live-server-amd64.iso
+ADD https://mirror.ajl.albony.in/ubuntu-releases/22.04.5/ubuntu-22.04.5-live-server-amd64.iso /opt/qemu/ubuntu.iso
 
 
 RUN wget https://github.com/novnc/noVNC/archive/refs/heads/master.zip -O /tmp/novnc.zip && \
