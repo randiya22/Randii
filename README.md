@@ -25,7 +25,7 @@ A lightweight Ubuntu 20.04 virtual machine running in a Docker container using Q
 ```bash
 # Clone the repository
 git clone https://github.com/hopingboyz/ubuntu22.04
-cd ubuntuvm22.04
+cd ubuntu22.04
 
 # Build the Docker image
 docker build -t qemu-ubuntu-vm .
