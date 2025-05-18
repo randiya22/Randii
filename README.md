@@ -24,7 +24,7 @@ A lightweight Ubuntu 20.04 virtual machine running in a Docker container using Q
 
 ```bash
 # Clone the repository
-git clone https://github.com/hopingboyz/ubuntuvm22.04
+git clone https://github.com/hopingboyz/ubuntu22.04
 cd ubuntuvm22.04
 
 # Build the Docker image
