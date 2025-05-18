@@ -8,7 +8,7 @@ A lightweight Ubuntu 20.04 virtual machine running in a Docker container using Q
 
 ## Features
 
-- 🐳 Containerized Ubuntu 20.04 VM
+- 🐳 Containerized Ubuntu 22.04 VM
 - ⚡ KVM-accelerated for near-native performance
 - 🌐 Web-based VNC access (port 6080)
 - 🔑 SSH access (port 2221)
