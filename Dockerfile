@@ -38,7 +38,7 @@ BOOT_ONCE_FLAG="/data/.booted"
 # Create virtual disk if not exists
 if [ ! -f "$DISK" ]; then
     echo "Creating disk image..."
-    qemu-img create -f qcow2 "$DISK" 100G
+    qemu-img create -f qcow2 "$DISK" 30G
 fi
 
 # Decide whether to boot from CD-ROM or disk only
@@ -56,7 +56,7 @@ qemu-system-x86_64 \
     -enable-kvm \
     -cpu host \
     -m 7400 \
-    -smp 8 \
+    -smp 2 \
     -vga virtio \
     $BOOT_OPTS \
     -drive file="$DISK",format=qcow2,if=virtio \
