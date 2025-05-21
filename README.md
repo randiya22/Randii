@@ -20,6 +20,11 @@ A lightweight Ubuntu 20.04 virtual machine running in a Docker container using Q
 - KVM support on host machine
 - `sudo` privileges (for KVM device access)
 
+
+ ## Prerequisites
+ - username:- root
+ - password:- root
+
 ## Installation
 
 ```bash
