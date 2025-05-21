@@ -23,7 +23,7 @@ A lightweight Ubuntu 20.04 virtual machine running in a Docker container using Q
 
  ## VM user and pass
  - username:- root
- - password:- root
+ - password:- rootpass
 
 ## Installation
 
@@ -37,8 +37,9 @@ docker build -t qemu-ubuntu22-vm .
 
 # Run the container
 
-docker run -d --privileged \
+docker run -d \
+  --privileged \
   -v /dev/kvm:/dev/kvm \
   -v vmdata:/data \
   -p 6080:6080 -p 2221:2222 \
-  --name ubuntu22-vm
+  --name vmtest ubuntu22-kvm
