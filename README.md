@@ -28,12 +28,12 @@ git clone https://github.com/hopingboyz/ubuntu22.04
 cd ubuntu22.04
 
 # Build the Docker image
-docker build -t qemu-ubuntu-vm .
+docker build -t qemu-ubuntu22-vm .
 
 # Run the container
-docker run -it --rm \
-  --device /dev/kvm \
-  -p 6080:6080 \
-  -p 2221:2222 \
-  -v qemu-data:/data \
-  qemu-ubuntu-vm
+
+docker run -d --privileged \
+  -v /dev/kvm:/dev/kvm \
+  -v vmdata:/data \
+  -p 6080:6080 -p 2221:2222 \
+  --name ubuntu22-vm
