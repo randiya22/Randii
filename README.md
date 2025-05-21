@@ -42,4 +42,4 @@ docker run -d \
   -v /dev/kvm:/dev/kvm \
   -v vmdata:/data \
   -p 6080:6080 -p 2221:2222 \
-  --name vmtest ubuntu22-kvm
+  --name vmtest qemu-ubuntu22-vm
