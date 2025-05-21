@@ -2,6 +2,7 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Install necessary tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     qemu-system-x86 \
     qemu-utils \
@@ -15,21 +16,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
+# Create working directories
 RUN mkdir -p /data /novnc /opt/qemu /cloud-init
 
-# Download Ubuntu Cloud image
+# Download Ubuntu 20.04 cloud image
 RUN wget https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img -O /opt/qemu/ubuntu.img
 
-# Cloud-init config
+# Create cloud-init meta-data
 RUN echo 'instance-id: ubuntu-vm\nlocal-hostname: ubuntu-vm' > /cloud-init/meta-data
 
-# Root password hash for "rootpass"
+# Create cloud-init user-data with root login enabled
 RUN cat <<EOF > /cloud-init/user-data
 #cloud-config
 users:
   - name: root
     lock_passwd: false
-    passwd: \$6\$Um/UNUmq1rYsc0N7\$IPjqZ3oBx1isZfBT99V06mwUyFZPKGIi8bsxlf4W9Ir9nS3aB0/u.gVSC6s9HDZBhWi84swg0Lt8bcTjJlaLg.
+    passwd: \$6\$gqRzOa5K\$kzNzql7/s9TehZH1DpRSe7qN6G4xQuEFv9kWRvcm54W1Yl8N5yx4tspkmnAGVK2nK3jLU5DkvZ31sH1FLaMjR1
     shell: /bin/bash
     sudo: ALL=(ALL) NOPASSWD:ALL
     ssh_pwauth: true
@@ -40,46 +42,45 @@ chpasswd:
     root:rootpass
 EOF
 
+# Create cloud-init ISO image
 RUN genisoimage -output /opt/qemu/seed.iso -volid cidata -joliet -rock /cloud-init/user-data /cloud-init/meta-data
 
-# Setup noVNC
+# Download and setup noVNC
 RUN wget https://github.com/novnc/noVNC/archive/refs/heads/master.zip -O /tmp/novnc.zip && \
     unzip /tmp/novnc.zip -d /tmp && \
     mv /tmp/noVNC-master/* /novnc && \
     rm -rf /tmp/novnc.zip /tmp/noVNC-master
 
-# Start script
+# Create startup script
 RUN cat <<'EOF' > /start.sh
 #!/bin/bash
 set -e
 
-DISK="/data/vm.raw"
+DISK="/data/disk.qcow2"
 IMG="/opt/qemu/ubuntu.img"
 SEED="/opt/qemu/seed.iso"
 
-# Create raw disk on first boot
+# Create VM disk if it doesn't exist
 if [ ! -f "$DISK" ]; then
     echo "Creating VM disk..."
-    qemu-img convert -f qcow2 -O raw "$IMG" "$DISK"
-    qemu-img resize "$DISK" 20G
+    qemu-img create -f qcow2 -b "$IMG" -F qcow2 "$DISK" 20G
 fi
 
-# Start QEMU with VNC
+# Start the VM
 qemu-system-x86_64 \
-    -enable-kvm \
-    -cpu host \
+    -m 6144 \
     -smp 2 \
-    -m 2048 \
-    -drive file="$DISK",format=raw,if=virtio \
+    -cpu max \
+    -drive file="$DISK",format=qcow2,if=virtio \
     -drive file="$SEED",format=raw,if=virtio \
-    -device virtio-net,netdev=net0 \
     -netdev user,id=net0,hostfwd=tcp::2222-:22 \
-    -vga std \
+    -device virtio-net,netdev=net0 \
+    -vga virtio \
+    -nographic \
     -vnc :0 &
 
-sleep 3
-
 # Start noVNC
+sleep 5
 websockify --web /novnc 6080 localhost:5900 &
 
 echo "================================================"
