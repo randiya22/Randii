@@ -18,13 +18,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Setup directories
 RUN mkdir -p /data /novnc /opt/qemu /cloud-init
 
-# Download Ubuntu 22.04 cloud image
+# Download Ubuntu cloud image (22.04)
 RUN curl -L https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img -o /opt/qemu/ubuntu.img
 
-# Cloud-init config
+# Cloud-init meta and user data
 RUN echo 'instance-id: ubuntu-vm\nlocal-hostname: ubuntu-vm' > /cloud-init/meta-data
 
-# Root password = rootpass (hashed)
+# Root login with password "rootpass"
 RUN cat <<EOF > /cloud-init/user-data
 #cloud-config
 users:
@@ -40,16 +40,16 @@ chpasswd:
   expire: false
 EOF
 
-# Create cloud-init ISO
+# Generate cloud-init ISO
 RUN genisoimage -output /opt/qemu/seed.iso -volid cidata -joliet -rock /cloud-init/user-data /cloud-init/meta-data
 
-# Get stable noVNC
+# Download and setup stable noVNC
 RUN curl -L https://github.com/novnc/noVNC/archive/refs/tags/v1.3.0.zip -o /tmp/novnc.zip && \
     unzip /tmp/novnc.zip -d /tmp && \
     mv /tmp/noVNC-1.3.0/* /novnc && \
     rm -rf /tmp/novnc.zip /tmp/noVNC-1.3.0
 
-# Create start script
+# Start script
 RUN cat <<'EOF' > /start.sh
 #!/bin/bash
 set -e
@@ -58,14 +58,14 @@ DISK="/data/vm.raw"
 IMG="/opt/qemu/ubuntu.img"
 SEED="/opt/qemu/seed.iso"
 
-# Create persistent VM disk
+# Create persistent VM disk if missing
 if [ ! -f "$DISK" ]; then
     echo "Creating VM disk..."
     qemu-img convert -f qcow2 -O raw "$IMG" "$DISK"
     qemu-img resize "$DISK" 20G
 fi
 
-# Start VM with KVM, fast virtio drivers
+# Start the VM silently in the background
 qemu-system-x86_64 \
     -enable-kvm \
     -cpu host \
@@ -77,9 +77,7 @@ qemu-system-x86_64 \
     -device virtio-net,netdev=net0 \
     -vga virtio \
     -display vnc=:0 \
-    -nographic &
-
-sleep 2
+    -daemonize
 
 # Start noVNC
 websockify --web=/novnc 6080 localhost:5900 &
