@@ -23,7 +23,7 @@ A lightweight Ubuntu 20.04 virtual machine running in a Docker container using Q
 
  ## VM user and pass
  - username:- root
- - password:- rootpass
+ - password:- root
 
 ## Installation
 
@@ -37,8 +37,4 @@ docker build -t ubuntu-vm .
 
 # Run the container
 
-docker run -d \
-docker run -d --rm --privileged \
-  -p 6080:6080 -p 2221:2222 \
-  -v vmdata:/data \
-  ubuntu-vm
+docker run --privileged -p 6080:6080 -p 2221:2222 -v $PWD/vmdata:/data ubuntu-vm
