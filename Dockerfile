@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM debian:12
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -20,17 +20,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Create required directories
 RUN mkdir -p /data /novnc /opt/qemu /cloud-init
 
-# Download Ubuntu 22.04 cloud image
-RUN curl -L https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img \
-    -o /opt/qemu/ubuntu.img
+# Download Debian 12 cloud image
+RUN curl -L https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2 \
+    -o /opt/qemu/debian.img
 
 # Write meta-data
-RUN echo "instance-id: ubuntu-vm\nlocal-hostname: ubuntu-vm" > /cloud-init/meta-data
+RUN echo "instance-id: debian-vm\nlocal-hostname: debian-vm" > /cloud-init/meta-data
 
-# Write user-data with working root login and password 'root'
+# Write user-data with root login enabled and password 'root'
 RUN printf "#cloud-config\n\
 preserve_hostname: false\n\
-hostname: ubuntu-vm\n\
+hostname: debian-vm\n\
 users:\n\
   - name: root\n\
     gecos: root\n\
@@ -64,7 +64,7 @@ RUN cat <<'EOF' > /start.sh
 set -e
 
 DISK="/data/vm.raw"
-IMG="/opt/qemu/ubuntu.img"
+IMG="/opt/qemu/debian.img"
 SEED="/opt/qemu/seed.iso"
 
 # Create disk if it doesn't exist
